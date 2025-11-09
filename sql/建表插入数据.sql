@@ -1,4 +1,3 @@
-use system_management
 /* 建表语句*/
 create table s_paper
 (
@@ -11,7 +10,7 @@ create table s_paper
 	qualify_score int not null,
 	paper_content varchar(2000),
 	paper_delete bit not null
-)
+);
 
 create table s_subject
 (
@@ -23,7 +22,7 @@ create table s_subject
 	subject_label varchar(100),
 	analysis varchar(2000) not null,
 	subject_delete bit not null
-)
+);
 
 create table t_user
 (
@@ -35,7 +34,7 @@ create table t_user
 	role_id int not null,
 	organ_id int not null,
 	user_delete bit not null
-)
+);
 create table exam
 (
 	exam_id int not null,
@@ -47,7 +46,7 @@ create table exam
 	exam_latetime int not null,
 	paper_id int not null,
 	exam_delete bit not null
-)
+);
 
 create table organ
 (
@@ -55,26 +54,26 @@ create table organ
 	organ_name varchar(20) not null,
 	organ_exp varchar(50) not null,
 	organ_delete bit not null
-)
+);
 
 create table per_level_per
 (
 	per_level_id int not null,
 	per_id int not null
-)
+);
 
 create table permission
 (
 	per_id int not null,
 	per_name varchar(20) not null,
 	per_exp varchar(50)
-)
+);
 
 create table permission_level
 (
 	per_level_id int not null,
-	per_name int varchar(20) not null
-)
+    per_name varchar(20) not null
+);
 
 create table t_role
 (
@@ -83,14 +82,14 @@ create table t_role
 	role_exp varchar(50),
 	per_level_id int not null,
 	role_delete bit not null
-)
+);
 
 create table user_password
 (
-	user_id int
+	user_id int,
 	user_number varchar(15),
 	pass_word varchar(20)
-)
+);
 
 create table user_exam
 (
@@ -102,7 +101,7 @@ create table user_exam
 	user_time int,
 	user_statue bit not null,
 	user_delete bit not null
-)
+);
 /*数据插入语句*/
 insert into organ
 values
@@ -112,17 +111,17 @@ values
 ('4',	'三年级数学组',	'三年级数学教学',0),
 ('5',	'四年级语文组',	'四年级语文教学',0),
 ('6',	'教务处',	'管理考试系统',0),
-('7',	'三年级二班',	'班级',0)
+('7',	'三年级二班',	'班级',0);
 
 insert into per_level_per
 values
 (2,2),
-(1,1)
+(1,1);
 
 insert into permission
 values
 (1, '查看', '查看功能'),
-(2, '出题', '拥有组卷权限')
+(2, '出题', '拥有组卷权限');
 
 insert into s_paper
 values
@@ -130,14 +129,14 @@ values
 (2, 2, 'title2', 90, 67, 100, 60, '1_2_3_4_5', 0),
 (3, 12, 'title3', 90, 85, 100, 60, '1_3_2_4_10', 0),
 (4, 3, 'title4', 90, 45, 100, 60, '1_2_3_6_210', 0),
-(5, 24, 'title5', 90, 66, 100, 60, '1_7_3_4_10', 0)
+(5, 24, 'title5', 90, 66, 100, 60, '1_7_3_4_10', 0);
 
 insert into t_role
 values
 ('1','管理员',NULL,1,0),
 ('2','教师',NULL,2,0),
 ('3','班主任',NULL,2,0),
-('4','学生',NULL,3,0)
+('4','学生',NULL,3,0);
 
 insert into t_user
 values
@@ -147,7 +146,7 @@ values
 (4,'小赵','G01719827','14456789876','男',1,1,	0),
 (5,	'小陈',	'E51814022',	'15855655421',	'男',	1,	1,	0),
 (6,	'张五', 'E51778456',	'15567542341',	'男',	1,	1,	0),
-(7,	'张七',	'E00000087',	'14567892345',	'女',	1,	1,	0)
+(7,	'张七',	'E00000087',	'14567892345',	'女',	1,	1,	0);
 
 insert into exam
 values
@@ -155,13 +154,13 @@ values
 (2, '数学第二次月考','固定时长','2021-05-05 00:00:00.000', '2021-06-05 23:59:00.000',120,30,2,0),
 (3, '数学第三次月考','固定时间','2020-08-12 00:00:00.000', '2020-08-15 00:00:00.000',90,15,3,0),
 (4, '数学第四次月考','固定时长','2020-08-12 00:00:00.000', '2020-08-12 23:00:55.000',100,20,4,0),
-(5, '数学第五次月考','固定时间','2020-08-15 23:59:59.000', '2020-08-15 23:50:32.000',120,30,5,0)
+(5, '数学第五次月考','固定时间','2020-08-15 23:59:59.000', '2020-08-15 23:50:32.000',120,30,5,0);
 
 insert into user_exam
 values
 (1,'张三',1, '数学第一次月考',null,null,0,0),
 (1,'张三',2, '数学第二次月考',null,null,0,0),
-(1,'张三',3, '数学第三次月考',null,null,0,0)
+(1,'张三',3, '数学第三次月考',null,null,0,0);
 
 insert into s_subject
 values
@@ -184,7 +183,7 @@ values
 (17,2,'把5克食盐放入100克水中，盐水和水的重量比是__________。',2,3,null,'21:20',0),
 (18,2,'投掷3次硬币，有2次正面朝上，1次反面朝上，那么，投掷第4次硬币正面朝上的可能性是__________。',2,2,null,'0.5',0),
 (19,2,'将1/7化成小数后，小数点后第20位上的数字是__________。',2,2,null,'4',0),
-(210,2,'100以内所有4的倍数的和是__________。',2,3,null,'1300',0)
+(210,2,'100以内所有4的倍数的和是__________。',2,3,null,'1300',0);
 
 insert into user_password
 values
