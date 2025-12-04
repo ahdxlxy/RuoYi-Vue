@@ -83,10 +83,15 @@ public class QuestionController {
      */
     @PostMapping("/import")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public Result<Void> importQuestions(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
-        Long teacherId = getCurrentUserId();
-        questionService.importQuestions(file, teacherId);
-        return Result.success();
+    public Result<com.exam.dto.QuestionImportResultDTO> importQuestions(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            Long teacherId = getCurrentUserId();
+            com.exam.dto.QuestionImportResultDTO result = questionService.importQuestions(file, teacherId);
+            return Result.success(result);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 
     private Long getCurrentUserId() {

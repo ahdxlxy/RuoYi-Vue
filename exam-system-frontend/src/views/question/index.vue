@@ -7,11 +7,36 @@
           action="#"
           :http-request="handleImport"
           :show-file-list="false"
-          accept=".xlsx, .xls"
-          style="margin-left: 10px"
+          accept=".xlsx, .xls, .csv"
+          style="margin-left: 10px; display: inline-block"
         >
           <el-button type="success">导入题目</el-button>
         </el-upload>
+        <el-tooltip placement="right" effect="light">
+          <template #content>
+            <div style="max-width: 400px">
+              <p style="font-weight: bold; margin-bottom: 8px">文件格式说明：</p>
+              <p style="margin-bottom: 8px">支持 Excel (.xlsx, .xls) 和 CSV 文件</p>
+              <p style="font-weight: bold; margin-bottom: 4px">必填字段：</p>
+              <ul style="margin: 4px 0; padding-left: 20px">
+                <li>题型：单选/多选/判断/填空/简答</li>
+                <li>题目内容</li>
+              </ul>
+              <p style="font-weight: bold; margin-bottom: 4px; margin-top: 8px">可选字段（有默认值）：</p>
+              <ul style="margin: 4px 0; padding-left: 20px">
+                <li>科目</li>
+                <li>选项A/B/C/D（单选/多选题需要）</li>
+                <li>答案</li>
+                <li>难度：简单/中等/困难（默认：简单）</li>
+              </ul>
+              <p style="font-weight: bold; margin-top: 8px">表头示例：</p>
+              <code style="background: #f5f5f5; padding: 4px; display: block; margin-top: 4px">题型 | 科目 | 题目内容 | 选项A | 选项B | 选项C | 选项D | 答案 | 难度</code>
+            </div>
+          </template>
+          <el-icon style="margin-left: 8px; cursor: help; color: #909399">
+            <QuestionFilled />
+          </el-icon>
+        </el-tooltip>
         <div class="search-box" style="margin-left: auto">
           <el-select v-model="searchForm.type" placeholder="题型" clearable style="width: 120px; margin-right: 10px">
             <el-option label="单选题" value="SINGLE" />
@@ -111,6 +136,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 import { getQuestionList, createQuestion, updateQuestion, deleteQuestion, importQuestions } from '@/api/question'
 
@@ -216,12 +242,47 @@ const handleImport = async (options) => {
   const formData = new FormData()
   formData.append('file', options.file)
   try {
-    await importQuestions(formData)
-    ElMessage.success('导入成功')
+    const res = await importQuestions(formData)
+    const result = res.data
+    
+    // 显示导入结果
+    if (result.failureCount === 0) {
+      ElMessage.success(`导入成功！共导入 ${result.successCount} 条题目`)
+    } else if (result.successCount === 0) {
+      ElMessage.error(`导入失败！共 ${result.failureCount} 条数据导入失败`)
+      // 显示详细错误信息
+      if (result.errorMessages && result.errorMessages.length > 0) {
+        const errorMsg = result.errorMessages.slice(0, 5).join('\n')
+        ElMessageBox.alert(
+          result.errorMessages.length > 5 
+            ? errorMsg + `\n... 还有 ${result.errorMessages.length - 5} 条错误` 
+            : errorMsg,
+          '导入错误详情',
+          { type: 'error' }
+        )
+      }
+    } else {
+      ElMessage.warning(
+        `导入完成！成功 ${result.successCount} 条，失败 ${result.failureCount} 条`
+      )
+      // 显示部分错误信息
+      if (result.errorMessages && result.errorMessages.length > 0) {
+        const errorMsg = result.errorMessages.slice(0, 3).join('\n')
+        ElMessageBox.alert(
+          result.errorMessages.length > 3 
+            ? errorMsg + `\n... 还有 ${result.errorMessages.length - 3} 条错误` 
+            : errorMsg,
+          '部分导入失败',
+          { type: 'warning' }
+        )
+      }
+    }
+    
     loadData()
   } catch (error) {
     console.error(error)
-    ElMessage.error('导入失败')
+    const errorMessage = error.response?.data?.message || error.message || '导入失败，请检查文件格式'
+    ElMessage.error(errorMessage)
   }
 }
 

@@ -13,6 +13,7 @@ import com.exam.mapper.QuestionMapper;
 import com.exam.service.QuestionService;
 import com.exam.vo.QuestionVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * 题目Service实现类
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
@@ -86,12 +88,19 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void importQuestions(MultipartFile file, Long teacherId) {
+    public com.exam.dto.QuestionImportResultDTO importQuestions(MultipartFile file, Long teacherId) {
         try {
-            EasyExcel.read(file.getInputStream(), QuestionImportDTO.class,
-                    new QuestionImportListener(this, teacherId)).sheet().doRead();
+            QuestionImportListener listener = new QuestionImportListener(this, teacherId);
+            EasyExcel.read(file.getInputStream(), QuestionImportDTO.class, listener)
+                    .sheet()
+                    .doRead();
+            return listener.getImportResult();
         } catch (IOException e) {
-            throw new BusinessException("文件读取失败");
+            log.error("文件读取失败", e);
+            throw new BusinessException("文件读取失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("文件解析失败", e);
+            throw new BusinessException("文件格式错误，请检查文件格式是否正确");
         }
     }
 }

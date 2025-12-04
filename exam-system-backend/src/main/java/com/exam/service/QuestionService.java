@@ -37,5 +37,6 @@ public interface QuestionService {
     /**
      * 导入题目
      */
-    void importQuestions(org.springframework.web.multipart.MultipartFile file, Long teacherId);
+    com.exam.dto.QuestionImportResultDTO importQuestions(org.springframework.web.multipart.MultipartFile file,
+            Long teacherId);
 }
