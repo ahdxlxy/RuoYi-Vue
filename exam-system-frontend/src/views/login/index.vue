@@ -34,8 +34,8 @@
         </el-form-item>
       </el-form>
       <div class="tip">
-        <p>默认密码：admin123 / 123456</p>
-        <p>管理员：admin | 教师：teacher1 | 学生：student1</p>
+        <p>默认账户: 管理员: admin | 教师: teacher1 | 学生: student1</p>
+        <p>默认密码：123456</p>
       </div>
     </div>
   </div>
