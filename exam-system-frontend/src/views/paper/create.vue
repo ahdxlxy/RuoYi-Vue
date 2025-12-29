@@ -48,6 +48,7 @@
     
     <!-- 选择题目对话框 -->
     <el-dialog v-model="showQuestionDialog" title="选择题目" width="800px">
+
       <el-table :data="questions" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="content" label="题目内容" show-overflow-tooltip />
@@ -57,6 +58,17 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+        <el-pagination
+            v-model:current-page="queryParams.pageNum"
+            v-model:page-size="queryParams.pageSize"
+            :total="total"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="loadQuestions"    @current-change="loadQuestions" />
+      </div>
+
       <template #footer>
         <el-button @click="showQuestionDialog = false">取消</el-button>
         <el-button type="primary" @click="addQuestions">确定</el-button>
@@ -78,6 +90,13 @@ const isEdit = ref(false)
 const showQuestionDialog = ref(false)
 const questions = ref([])
 const selectedFromDialog = ref([])
+
+const total = ref(0)
+const queryParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  content: '' // 如果以后想加搜索功能可以用这个
+})
 
 const form = reactive({
   name: '',
@@ -163,8 +182,18 @@ const handleSubmit = async () => {
 
 const loadQuestions = async () => {
   try {
-    const res = await getQuestionList({ current: 1, size: 100 })
+    const res = await getQuestionList({
+      // 左边是后端要的参数名，右边是你前端变化的变量
+      current: queryParams.pageNum,
+      size: queryParams.pageSize,
+      // 如果还有查询条件，也可以带上
+      // content: queryParams.content
+    })
+
+    // 赋值数据
     questions.value = res.data.records
+    total.value = res.data.total
+
   } catch (error) {
     console.error(error)
   }
